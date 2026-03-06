@@ -113,14 +113,14 @@ export default function RestaurantView() {
         <button 
           onClick={() => setActiveView("dining")}
           className="btn-premium" 
-          style={{ background: activeView === "dining" ? 'var(--secondary)' : 'var(--card-bg)' }}
+          style={{ background: 'var(--secondary)' }}
         >
           <Utensils size={20} /> DINING AREA
         </button>
         <button 
           onClick={() => setActiveView("kitchen")}
           className="btn-premium" 
-          style={{ background: activeView === "kitchen" ? 'var(--secondary)' : 'var(--card-bg)' }}
+          style={{ background: 'var(--card-bg)' }}
         >
           <ChefHat size={20} /> KITCHEN
         </button>
