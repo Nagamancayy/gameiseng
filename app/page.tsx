@@ -1,17 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Play, Book, Settings, ChefHat } from "lucide-react";
+import { useState } from "react";
+import { Play, ScrollText, Building2, ChefHat } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import GameButton from "@/components/ui/GameButton";
 
-import RestaurantView from "@/components/RestaurantView";
+import StepByStepMode from "@/components/modes/StepByStepMode";
+import CustomMode from "@/components/modes/CustomMode";
+import RestaurantMode from "@/components/modes/RestaurantMode";
+
+export type GameState = "menu" | "step-by-step" | "custom" | "restaurant";
 
 export default function Home() {
-  const [gameState, setGameState] = useState<"menu" | "playing" | "cooking">("menu");
+  const [gameState, setGameState] = useState<GameState>("menu");
+
+  const goMenu = () => setGameState("menu");
 
   return (
-    <main style={{ height: '100vh', width: '100vw', position: 'relative', overflow: 'hidden' }}>
+    <main style={{ height: '100vh', width: '100vw', position: 'relative', overflow: 'hidden', background: "var(--background)" }}>
       <AnimatePresence mode="wait">
         {gameState === "menu" ? (
           <motion.div
@@ -34,51 +40,61 @@ export default function Home() {
               transition={{ delay: 0.2, type: "spring" }}
               className="text-center"
             >
-              <h1 className="text-gradient" style={{ fontSize: '4rem', fontWeight: 'bold', marginBottom: '0.5rem', fontFamily: 'Outfit' }}>
-                CHEF DE CUISINE
+              <h1 className="text-gradient" style={{ fontSize: '5rem', fontWeight: '900', marginBottom: '0.5rem', fontFamily: 'Outfit, sans-serif' }}>
+                CLICK & COOK
               </h1>
-              <p style={{ color: 'var(--secondary)', fontSize: '1.2rem', letterSpacing: '2px' }}>
-                THE ULTIMATE COOKING ADVENTURE
+              <p style={{ color: 'var(--secondary)', fontSize: '1.5rem', letterSpacing: '4px', fontWeight: 'bold' }}>
+                NANO BANANA EDITION
               </p>
             </motion.div>
 
-            <div className="glass-panel" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '320px' }}>
-              <button 
-                onClick={() => setGameState("playing")}
-                className="btn-premium" 
-                style={{ width: '100%', justifyContent: 'center', fontSize: '1.1rem' }}
+            <div className="glass-panel" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '400px' }}>
+              <GameButton 
+                onClick={() => setGameState("step-by-step")}
+                variant="primary"
+                style={{ width: '100%', justifyContent: 'center', fontSize: '1.2rem', padding: '16px' }}
               >
-                <Play size={20} fill="currentColor" /> START CAREER
-              </button>
+                <ScrollText size={24} /> STEP-BY-STEP MODE
+              </GameButton>
               
-              <button className="btn-premium" style={{ width: '100%', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <Book size={20} /> RECIPE BOOK
-              </button>
+              <GameButton 
+                onClick={() => setGameState("custom")}
+                variant="secondary"
+                style={{ width: '100%', justifyContent: 'center', fontSize: '1.2rem', padding: '16px' }}
+              >
+                <ChefHat size={24} /> CUSTOM SANDBOX
+              </GameButton>
 
-              <button className="btn-premium" style={{ width: '100%', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <Settings size={20} /> SETTINGS
-              </button>
+              <GameButton 
+                onClick={() => setGameState("restaurant")}
+                variant="danger"
+                style={{ width: '100%', justifyContent: 'center', fontSize: '1.2rem', padding: '16px' }}
+              >
+                <Building2 size={24} /> RESTAURANT CAREER
+              </GameButton>
             </div>
 
             <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              style={{ position: 'absolute', bottom: '5%', right: '10%' }}
+              animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              style={{ position: 'absolute', bottom: '10%', right: '15%' }}
             >
-              <ChefHat size={120} color="var(--primary)" opacity={0.2} strokeWidth={1} />
+              <ChefHat size={160} color="var(--primary)" opacity={0.15} strokeWidth={1} />
             </motion.div>
           </motion.div>
-        ) : (
-          <motion.div
-            key="playing"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="h-full w-full"
-          >
-            <RestaurantView />
+        ) : gameState === "step-by-step" ? (
+          <motion.div key="step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
+            <StepByStepMode onBack={goMenu} />
           </motion.div>
-        )}
+        ) : gameState === "custom" ? (
+          <motion.div key="custom" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
+            <CustomMode onBack={goMenu} />
+          </motion.div>
+        ) : gameState === "restaurant" ? (
+          <motion.div key="restaurant" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
+            <RestaurantMode onBack={goMenu} />
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     </main>
   );
