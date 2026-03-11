@@ -99,8 +99,8 @@ export default function CustomMode({ onBack }: ModeProps) {
               >
                 {resultDish ? (
                   <>
-                    <div className="w-48 h-48 relative drop-shadow-[0_0_40px_rgba(255,215,0,0.6)]">
-                      <Image src={resultDish.image} alt={resultDish.name} fill className="object-contain" />
+                    <div className="w-48 h-48 relative drop-shadow-[0_0_40px_rgba(255,215,0,0.6)] bg-white rounded-full p-4 border-4 border-yellow-400">
+                      <Image src={resultDish.image} alt={resultDish.name} fill className="object-contain mix-blend-multiply scale-90" />
                     </div>
                     <div className="flex items-center gap-2 text-yellow-400">
                       <Sparkles />
@@ -110,8 +110,8 @@ export default function CustomMode({ onBack }: ModeProps) {
                   </>
                 ) : (
                   <>
-                    <div className="w-48 h-48 relative drop-shadow-xl opacity-50 contrast-200 sepia">
-                      <Image src={INGREDIENTS[workbench[0]].image} alt="Failed" fill className="object-contain" />
+                    <div className="w-48 h-48 relative drop-shadow-xl opacity-50 contrast-200 sepia bg-white rounded-full p-4 mb-4">
+                      <Image src={INGREDIENTS[workbench[0]].image} alt="Failed" fill className="object-contain mix-blend-multiply scale-90" />
                     </div>
                     <h2 className="text-3xl font-bold text-gray-400">MUDDY SLUDGE...</h2>
                     <p className="text-red-400">That combination didn't work.</p>
@@ -124,11 +124,11 @@ export default function CustomMode({ onBack }: ModeProps) {
             ) : (
               <motion.div key="idle" className="flex items-center justify-center gap-8 w-full h-full">
                 {[0, 1, 2].map((slot) => (
-                  <div key={slot} className="w-32 h-32 rounded-2xl border-2 border-dashed border-gray-600 bg-black/20 flex flex-col items-center justify-center position-relative transition-all hover:bg-black/40">
+                  <div key={slot} className="w-32 h-32 rounded-2xl border-2 border-dashed border-gray-600 bg-black/20 flex flex-col items-center justify-center relative transition-all hover:bg-black/40">
                     {workbench[slot] ? (
                       <motion.div initial={{ scale: 0, rotate: -45 }} animate={{ scale: 1, rotate: 0 }}>
-                        <div className="w-24 h-24 relative drop-shadow-xl">
-                          <Image src={INGREDIENTS[workbench[slot]].image} alt="Ingredient" fill className="object-contain" />
+                        <div className="w-24 h-24 relative drop-shadow-xl bg-white rounded-xl p-2">
+                          <Image src={INGREDIENTS[workbench[slot]].image} alt="Ingredient" fill className="object-contain mix-blend-multiply scale-90" />
                         </div>
                       </motion.div>
                     ) : (
@@ -167,8 +167,8 @@ export default function CustomMode({ onBack }: ModeProps) {
                 disabled={status !== "idle" || workbench.length >= 3}
                 className={`flex-shrink-0 flex flex-col items-center gap-3 p-4 rounded-xl min-w-[120px] transition-colors ${status !== "idle" || workbench.length >= 3 ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10 bg-black/20"}`}
               >
-                <div className="w-16 h-16 relative">
-                  <Image src={ingr.image} alt={ingr.name} fill className="object-contain" />
+                <div className="w-16 h-16 relative bg-white rounded-lg p-1">
+                  <Image src={ingr.image} alt={ingr.name} fill className="object-contain mix-blend-multiply scale-90" />
                 </div>
                 <span className="font-bold text-sm whitespace-nowrap">{ingr.name}</span>
               </motion.button>

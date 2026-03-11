@@ -64,8 +64,8 @@ export default function StepByStepMode({ onBack }: ModeProps) {
           animate={{ y: 0, opacity: 1 }}
           className="glass-panel p-6 max-w-2xl flex gap-6 items-center"
         >
-          <div className="w-24 h-24 relative flex-shrink-0">
-            <Image src="/assets/chef_char.png" alt="Chef" fill className="object-contain drop-shadow-[0_0_15px_var(--primary)]" />
+          <div className="w-24 h-24 relative flex-shrink-0 bg-white rounded-full p-2 border-2 border-gray-200">
+            <Image src="/assets/chef_char.png" alt="Chef" fill className="object-contain mix-blend-multiply scale-90" />
           </div>
           <div>
             <h2 className="text-xl font-bold mb-2 text-[var(--accent)]">Chef Nana says:</h2>
@@ -84,8 +84,8 @@ export default function StepByStepMode({ onBack }: ModeProps) {
                 transition={{ type: "spring", bounce: 0.6 }}
                 className="flex flex-col items-center gap-4"
               >
-                <div className="w-48 h-48 relative drop-shadow-[0_0_30px_#22c55e]">
-                  <Image src={targetDish.image} alt={targetDish.name} fill className="object-contain" />
+                <div className="w-48 h-48 relative drop-shadow-[0_0_30px_#22c55e] bg-white rounded-full border-4 border-green-400 p-4">
+                  <Image src={targetDish.image} alt={targetDish.name} fill className="object-contain mix-blend-multiply scale-90" />
                 </div>
                 <h2 className="text-4xl font-bold text-green-400 drop-shadow-lg">PERFECT {targetDish.name.toUpperCase()}!</h2>
                 <GameButton onClick={onBack} variant="primary" className="mt-4">
@@ -124,8 +124,8 @@ export default function StepByStepMode({ onBack }: ModeProps) {
                 <p className="text-2xl font-bold uppercase tracking-widest text-[var(--accent)]">
                   NEXT INGREDIENT: {expectedIngredientObj.name}
                 </p>
-                <div className="w-32 h-32 relative opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                  <Image src={expectedIngredientObj.image} alt={expectedIngredientObj.name} fill className="object-contain" />
+                <div className="w-32 h-32 relative bg-white rounded-2xl border-2 border-dashed border-gray-300 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 p-4">
+                  <Image src={expectedIngredientObj.image} alt={expectedIngredientObj.name} fill className="object-contain mix-blend-multiply scale-90" />
                 </div>
               </motion.div>
             )}
@@ -144,8 +144,8 @@ export default function StepByStepMode({ onBack }: ModeProps) {
                 disabled={status !== "idle"}
                 className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${status !== "idle" ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"}`}
               >
-                <div className="w-24 h-24 relative drop-shadow-xl">
-                  <Image src={ingr.image} alt={ingr.name} fill className="object-contain" />
+                <div className="w-24 h-24 relative bg-white rounded-2xl shadow-xl p-2 border border-gray-200">
+                  <Image src={ingr.image} alt={ingr.name} fill className="object-contain mix-blend-multiply scale-90" />
                 </div>
                 <span className="font-bold text-lg">{ingr.name}</span>
               </motion.button>

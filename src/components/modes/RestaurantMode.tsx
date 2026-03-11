@@ -164,9 +164,9 @@ export default function RestaurantMode({ onBack }: ModeProps) {
                     <motion.div 
                       initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="w-48 h-64 absolute bottom-0 z-10"
+                      className="w-48 h-64 absolute bottom-0 z-10 bg-white rounded-t-full shadow-2xl"
                     >
-                      <Image src={table.customerSprite} alt="Customer" fill className="object-contain" />
+                      <Image src={table.customerSprite} alt="Customer" fill className="object-contain mix-blend-multiply" />
                     </motion.div>
                   )}
                   {/* Table visual */}
@@ -175,8 +175,8 @@ export default function RestaurantMode({ onBack }: ModeProps) {
                         <div className="absolute inset-x-0 top-0 h-2 bg-green-900/50" />
                       )}
                       {table.status === "eating" && (
-                        <div className="absolute left-1/2 -translate-x-1/2 bottom-2 w-12 h-12">
-                           <Image src={DISHES[table.order!].image} alt="Food" fill className="object-contain drop-shadow-xl" />
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-2 w-16 h-16 bg-white rounded-full p-2 shadow-lg">
+                           <Image src={DISHES[table.order!].image} alt="Food" fill className="object-contain mix-blend-multiply scale-75" />
                         </div>
                       )}
                   </div>
@@ -191,8 +191,8 @@ export default function RestaurantMode({ onBack }: ModeProps) {
           <h2 className="text-2xl font-bold uppercase tracking-widest text-[var(--primary)] glass-panel text-center py-2">KITCHEN STATION</h2>
           
           <div className="glass-panel flex-1 flex flex-col p-6 items-center gap-6">
-            <div className="w-56 h-56 relative border-4 border-[var(--primary)] rounded-full overflow-hidden bg-white/5 drop-shadow-[0_0_20px_rgba(255,107,107,0.3)]">
-              <Image src="/assets/chef_char.png" alt="Chef" fill className="object-cover object-top" />
+            <div className="w-56 h-56 relative border-4 border-[var(--primary)] rounded-full overflow-hidden bg-white drop-shadow-[0_0_20px_rgba(255,107,107,0.3)]">
+              <Image src="/assets/chef_char.png" alt="Chef" fill className="object-cover object-top mix-blend-multiply" />
               {isCooking && (
                 <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center backdrop-blur-sm">
                   <Flame size={64} className="text-red-500 animate-pulse" />
@@ -204,8 +204,8 @@ export default function RestaurantMode({ onBack }: ModeProps) {
               <h3 className="font-bold text-sm text-gray-400">ORDER QUEUE ({chefQueue.length})</h3>
               <div className="flex gap-2 overflow-x-auto p-2">
                 {chefQueue.map((order, idx) => (
-                   <div key={idx} className={`w-12 h-12 relative flex-shrink-0 bg-white/10 rounded-md p-1 ${idx === 0 && isCooking ? "animate-bounce border-2 border-orange-500" : ""}`}>
-                     <Image src={DISHES[order].image} alt="Dish" fill className="object-contain" />
+                   <div key={idx} className={`w-12 h-12 relative flex-shrink-0 bg-white rounded-md p-1 shadow-sm ${idx === 0 && isCooking ? "animate-bounce border-2 border-orange-500" : ""}`}>
+                     <Image src={DISHES[order].image} alt="Dish" fill className="object-contain mix-blend-multiply scale-90" />
                    </div>
                 ))}
               </div>
@@ -217,8 +217,8 @@ export default function RestaurantMode({ onBack }: ModeProps) {
             <h3 className="font-bold text-sm text-gray-400 flex items-center gap-2"><Utensils size={16} /> READY TO SERVE</h3>
             <div className="flex gap-4 overflow-x-auto p-2 h-full items-center">
               {inventory.map((item, idx) => (
-                <motion.div key={idx} initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-16 h-16 relative bg-green-500/20 border-2 border-green-500 rounded-lg p-2 flex-shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                   <Image src={DISHES[item].image} alt="Ready" fill className="object-contain" />
+                <motion.div key={idx} initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-16 h-16 relative bg-white border-2 border-green-500 rounded-lg p-2 flex-shrink-0 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                   <Image src={DISHES[item].image} alt="Ready" fill className="object-contain mix-blend-multiply scale-90" />
                 </motion.div>
               ))}
               {inventory.length === 0 && <p className="text-gray-500 italic m-auto">Kitchen is empty...</p>}
