@@ -50,48 +50,83 @@ export interface CareerLevelConfig {
   reward: number;            // coins awarded on completion
 }
 
-export const CAREER_LEVELS: CareerLevelConfig[] = [
-  {
-    level: 1, label: "Grand Opening", description: "Your first day! Nice and easy — no rush.",
-    baseTables: [{ id:1, size:2 },{ id:2, size:4 }],
-    targetScore: 55,  timeLimit: 130, baseCookTime: 3000, basePatienceDrain: 0.35, arrivalInterval: 11000, reward: 50,
-  },
-  {
-    level: 2, label: "Word Gets Out", description: "A few more guests show up. Still chill.",
-    baseTables: [{ id:1, size:2 },{ id:2, size:4 },{ id:3, size:4 }],
-    targetScore: 110, timeLimit: 130, baseCookTime: 2800, basePatienceDrain: 0.45, arrivalInterval: 9000,  reward: 70,
-  },
-  {
-    level: 3, label: "Lunch Rush", description: "Midday buzz. Getting busier!",
-    baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:4 },{ id:4, size:4 }],
-    targetScore: 200, timeLimit: 140, baseCookTime: 2600, basePatienceDrain: 0.55, arrivalInterval: 8000,  reward: 90,
-  },
-  {
-    level: 4, label: "Friday Night", description: "Weekend warriors arrive!",
-    baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:4 },{ id:4, size:4 },{ id:5, size:4 }],
-    targetScore: 330, timeLimit: 140, baseCookTime: 2400, basePatienceDrain: 0.65, arrivalInterval: 7000,  reward: 110,
-  },
-  {
-    level: 5, label: "Food Critic Visit", description: "Impress the critic! Moderate speed needed.",
-    baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:4 },{ id:5, size:4 },{ id:6, size:4 }],
-    targetScore: 500, timeLimit: 150, baseCookTime: 2200, basePatienceDrain: 0.80, arrivalInterval: 6500,  reward: 140,
-  },
-  {
-    level: 6, label: "Peak Season", description: "Holiday crowds. Stay sharp!",
-    baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:4 },{ id:5, size:4 },{ id:6, size:4 },{ id:7, size:4 }],
-    targetScore: 720, timeLimit: 150, baseCookTime: 2000, basePatienceDrain: 0.95, arrivalInterval: 6000,  reward: 175,
-  },
-  {
-    level: 7, label: "Championship Round", description: "Competing for best restaurant in town!",
-    baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:2 },{ id:5, size:4 },{ id:6, size:4 },{ id:7, size:4 },{ id:8, size:4 }],
-    targetScore: 1000, timeLimit: 155, baseCookTime: 1800, basePatienceDrain: 1.1, arrivalInterval: 5500,  reward: 220,
-  },
-  {
-    level: 8, label: "Michelin Star", description: "The ultimate test. Legends only.",
-    baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:2 },{ id:5, size:4 },{ id:6, size:4 },{ id:7, size:4 },{ id:8, size:4 },{ id:9, size:4 }],
-    targetScore: 1400, timeLimit: 160, baseCookTime: 1600, basePatienceDrain: 1.3, arrivalInterval: 5000,  reward: 300,
-  },
-];
+// ──────────────────────────────────────────────────────────────────────────────
+// 100-level generator — smooth difficulty curve
+// ──────────────────────────────────────────────────────────────────────────────
+
+const MILESTONE_LABELS: Partial<Record<number, [string, string]>> = {
+   1:  ["Grand Opening",       "Your very first day! Take it easy."],
+   5:  ["Word Gets Out",       "Reviews are in — guests are coming!"],
+  10:  ["Lunch Crowd",         "Midday diners packing in."],
+  15:  ["Weekend Buzz",        "Saturday vibes. Stay on your toes!"],
+  20:  ["Food Blogger Visit",  "A famous blogger is at table 3!"],
+  25:  ["Prime Time",          "Peak dinner service begins."],
+  30:  ["Rainy Day Rush",      "Everyone chose tonight to eat out."],
+  35:  ["Festival Season",     "The block party spills into your restaurant."],
+  40:  ["Celebrity Sighting",  "Is that… a celebrity? You better deliver!"],
+  45:  ["Double Shift",        "Staff called in sick. You're doing it all."],
+  50:  ["Halfway Hero",        "50 levels down! The real challenge begins."],
+  55:  ["VIP Reservation",     "Their expectations are sky-high."],
+  60:  ["Food Network Scout",  "A producer is watching every move."],
+  65:  ["Citywide Hunger",     "The other restaurants are closed today."],
+  70:  ["Championship Prelim", "Competing against the best in the city."],
+  75:  ["Michelin Inspector",  "One wrong move loses the star."],
+  80:  ["Iron Chef Night",     "Prove you belong among legends."],
+  85:  ["Sold-Out Show",       "Every seat booked 2 weeks in advance."],
+  90:  ["Grand Finale Prep",   "The last push before the championship."],
+  95:  ["Hall of Fame",        "Only the elite have made it this far."],
+ 100:  ["LEGENDARY CHEF",      "Level 100. You are the greatest chef alive."],
+};
+
+function generateCareerLevel(n: number): CareerLevelConfig {
+  // t: 0 → 1, gentle start (power < 1 = slow start, steeper finish)
+  const t = Math.pow((n - 1) / 99, 0.8);
+
+  // Target score: $55 → ~$20 000 (exponential feel)
+  const targetScore = Math.round(55 * Math.pow(380, t));
+
+  // Timer: 130s → 200s
+  const timeLimit = Math.round(130 + t * 70);
+
+  // Cook time: 3000ms → 1000ms
+  const baseCookTime = Math.round(3000 - t * 2000);
+
+  // Patience drain: 0.35 → 2.5 per 400ms tick
+  const basePatienceDrain = Math.round((0.35 + t * 2.15) * 100) / 100;
+
+  // Arrival interval: 11 000ms → 2 800ms
+  const arrivalInterval = Math.round(11000 - t * 8200);
+
+  // Reward: 50 → 900 coins
+  const reward = Math.round(50 + t * 850);
+
+  // Tables: grow every ~10 levels, capped
+  const numSmall = Math.min(1 + Math.floor((n - 1) / 10), 6);
+  const numLarge = Math.min(1 + Math.floor((n - 1) / 8),  10);
+  const baseTables: TableConfig[] = [];
+  let tid = 1;
+  for (let i = 0; i < numSmall; i++) baseTables.push({ id: tid++, size: 2 });
+  for (let i = 0; i < numLarge; i++) baseTables.push({ id: tid++, size: 4 });
+
+  const [label, description] = MILESTONE_LABELS[n] ?? [
+    `Stage ${n}`,
+    n < 30  ? "Getting busier — keep your cool!"
+    : n < 60 ? "No time to rest. Keep those tables turning!"
+    : n < 85 ? "Every second counts. Don't drop the ball!"
+               : "Only legends survive these shifts.",
+  ];
+
+  return {
+    level: n, label, description, baseTables,
+    targetScore, timeLimit, baseCookTime, basePatienceDrain, arrivalInterval, reward,
+  };
+}
+
+export const CAREER_LEVELS: CareerLevelConfig[] = Array.from(
+  { length: 100 },
+  (_, i) => generateCareerLevel(i + 1)
+);
+
 
 // ─── Shop catalogue ───────────────────────────────────────────────────────────
 export interface ShopItem {
