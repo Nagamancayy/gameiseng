@@ -1,94 +1,191 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
+@import "tailwindcss";
 
 :root {
-  --primary: #ff6b6b;
+  --primary:   #ff6b6b;
+  --primary-glow: rgba(255, 107, 107, 0.4);
   --secondary: #4ecdc4;
-  --accent: #f7d794;
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-reflection: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  --shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --font-main: "Inter", system-ui, -apple-system, sans-serif;
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --secondary-glow: rgba(78, 205, 196, 0.4);
+  --accent:    #ffd93d;
+  --accent-glow: rgba(255, 217, 61, 0.4);
+  --success:   #6bcb77;
+  --danger:    #ff6b6b;
+  --bg-dark:   #0a0e1a;
+  --bg-mid:    #111827;
+  --card-bg:   rgba(17, 24, 39, 0.85);
+  --glass-border: rgba(255,255,255,0.12);
+  --font-game: 'Nunito', system-ui, sans-serif;
+  --font-title: 'Fredoka One', cursive;
+  --radius-xl: 32px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+* { box-sizing: border-box; padding: 0; margin: 0; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-main);
-  overflow: hidden; /* Game is usually fullscreen */
+  background: var(--bg-dark);
+  color: #f1f5f9;
+  font-family: var(--font-game);
+  overflow: hidden;
   height: 100vh;
   width: 100vw;
 }
 
-.glass-panel {
+/* ──────────────── GLASS PANELS ──────────────── */
+.glass {
   background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-premium);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.glass-panel { /* backwards compat */ 
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
-.btn-premium {
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-}
-
-.btn-premium:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
-  filter: brightness(1.1);
-}
-
-.btn-premium:active {
-  transform: translateY(0);
-}
-
+/* ──────────────── TYPOGRAPHY ──────────────── */
+.title-font { font-family: var(--font-title); }
 .text-gradient {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 60%, #ff9a9e 100%);
   -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-teal {
+  background: linear-gradient(135deg, var(--secondary), #a8edea);
+  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ──────────────── GLOW EFFECTS ──────────────── */
+.glow-primary { box-shadow: 0 0 20px var(--primary-glow), 0 0 40px rgba(255,107,107,0.2); }
+.glow-teal    { box-shadow: 0 0 20px var(--secondary-glow), 0 0 40px rgba(78,205,196,0.2); }
+.glow-accent  { box-shadow: 0 0 20px var(--accent-glow); }
+
+/* ──────────────── INGREDIENT CARD ──────────────── */
+.ingr-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.ingr-card:hover {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+  border-color: var(--accent);
+}
+.ingr-card:active { transform: scale(0.95); }
+
+/* ──────────────── TABLE CARD ──────────────── */
+.table-card {
+  background: linear-gradient(160deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%);
+  border: 2px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  overflow: hidden;
+}
+.table-card.ordering {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow), 0 8px 32px rgba(0,0,0,0.5);
+}
+.table-card.waiting { border-color: var(--secondary); box-shadow: 0 0 20px var(--secondary-glow), 0 8px 32px rgba(0,0,0,0.5); }
+.table-card.eating  { border-color: var(--success);   }
+.table-card.dirty   { border-color: var(--primary);   box-shadow: 0 0 16px var(--primary-glow); }
+.table-card:not(.empty):hover { transform: translateY(-4px) scale(1.02); }
+
+/* ──────────────── STAR RATING ──────────────── */
+.star { font-size: 1.5rem; filter: grayscale(1); transition: filter 0.3s, transform 0.3s; }
+.star.active { filter: grayscale(0); transform: scale(1.2); }
+
+/* ──────────────── PROGRESS BAR ──────────────── */
+.progress-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--secondary), var(--accent));
+  transition: width 1s linear;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+/* ──────────────── HUD BADGE ──────────────── */
+.hud-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.5);
 }
+
+/* ──────────────── ANIMATIONS ──────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-12px) rotate(3deg); }
+}
+@keyframes pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 var(--accent-glow); }
+  70%  { box-shadow: 0 0 0 16px rgba(0,0,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+}
+@keyframes bounce-in {
+  0%   { transform: scale(0) rotate(-20deg); }
+  60%  { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-8px) rotate(-3deg); }
+  75%      { transform: translateX(8px) rotate(3deg); }
+}
+
+.anim-float   { animation: float 4s ease-in-out infinite; }
+.anim-pop     { animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.anim-bounce  { animation: bounce-in 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.anim-shake   { animation: shake 0.4s ease-in-out; }
+.anim-pulse   { animation: pulse-ring 1.5s ease-out infinite; }
+
+/* ──────────────── CONFETTI-LIKE CELEBRATION ──────────────── */
+.celebrate-text {
+  background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4ecdc4, #a78bfa);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ──────────────── SCROLLBAR ──────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 999px; }

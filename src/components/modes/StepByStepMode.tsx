@@ -1,158 +1,256 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
+import { useState, useCallback } from "react";
+import { ArrowLeft, ChefHat, Star, Trophy, RotateCcw, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import GameButton from "@/components/ui/GameButton";
 import Image from "next/image";
 import { INGREDIENTS, DISHES, STEP_BY_STEP_LEVELS } from "@/lib/gameData";
 
-interface ModeProps {
-  onBack: () => void;
-}
+interface Props { onBack: () => void; }
 
-export default function StepByStepMode({ onBack }: ModeProps) {
-  const level = STEP_BY_STEP_LEVELS[0];
-  const targetDish = DISHES[level.targetDish];
-  const [currentStep, setCurrentStep] = useState(0);
-  const [status, setStatus] = useState<"idle" | "success" | "error" | "completed">("idle");
+type StepStatus = "idle" | "correct" | "wrong" | "done";
 
-  const expectedIngredientObj = INGREDIENTS[targetDish.recipe[currentStep]];
+export default function StepByStepMode({ onBack }: Props) {
+  const [levelIdx, setLevelIdx] = useState(0);
+  const [step, setStep]         = useState(0);
+  const [status, setStatus]     = useState<StepStatus>("idle");
+  const [stars, setStars]       = useState(3);
+  const [msg, setMsg]           = useState("");
+  const [showComplete, setShowComplete] = useState(false);
+  const [completedLevels, setCompletedLevels] = useState<Set<number>>(new Set());
 
-  const handleIngredientClick = (clickedId: string) => {
-    if (status === "success" || status === "error" || status === "completed") return;
+  const currentLevel = STEP_BY_STEP_LEVELS[levelIdx];
+  const dish         = DISHES[currentLevel.targetDish];
+  const recipe       = dish.recipe;
+  const expectedId   = recipe[step];
+  const allIngredients = recipe.map(id => INGREDIENTS[id]);
 
-    if (clickedId === expectedIngredientObj.id) {
-      if (currentStep + 1 === targetDish.recipe.length) {
-        setStatus("completed");
-      } else {
-        setStatus("success");
-        setTimeout(() => {
-          setCurrentStep(c => c + 1);
-          setStatus("idle");
-        }, 1000);
-      }
-    } else {
-      setStatus("error");
+  const handleClick = useCallback((ingrId: string) => {
+    if (status !== "idle") return;
+
+    if (ingrId === expectedId) {
+      setStatus("correct");
+      setMsg("✅ Perfect! Keep going!");
       setTimeout(() => {
         setStatus("idle");
-      }, 1000);
+        setMsg("");
+        if (step + 1 >= recipe.length) {
+          setShowComplete(true);
+          setCompletedLevels(prev => new Set([...prev, levelIdx]));
+        } else {
+          setStep(s => s + 1);
+        }
+      }, 700);
+    } else {
+      setStatus("wrong");
+      setStars(s => Math.max(0, s - 1));
+      setMsg(`❌ Oops! You need ${INGREDIENTS[expectedId].name} next!`);
+      setTimeout(() => { setStatus("idle"); setMsg(""); }, 1200);
+    }
+  }, [status, expectedId, step, recipe, levelIdx]);
+
+  const reset = () => {
+    setStep(0); setStatus("idle"); setStars(3); setMsg(""); setShowComplete(false);
+  };
+
+  const nextLevel = () => {
+    if (levelIdx + 1 < STEP_BY_STEP_LEVELS.length) {
+      setLevelIdx(l => l + 1); reset();
     }
   };
 
   return (
-    <div className="h-full w-full flex flex-col relative" style={{ background: '#1e293b' }}>
-      {/* Background Image */}
-      <Image
-        src="/assets/kitchen_bg.png"
-        alt="Kitchen Background"
-        fill
-        className="object-cover opacity-60 pointer-events-none"
-      />
-
-      <div className="absolute top-6 left-6 z-50">
-        <GameButton onClick={onBack} variant="secondary">
-          <ArrowLeft size={20} /> BACK TO MENU
-        </GameButton>
+    <div className="h-full w-full flex flex-col relative" style={{ background: "linear-gradient(160deg, #0a1628 0%, #0f2a1e 100%)" }}>
+      {/* BG art */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <Image src="/assets/kitchen_bg.png" alt="" fill className="object-cover" />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center justify-center w-full h-full gap-8 p-8">
-        
-        {/* Dialogue Box */}
-        <motion.div 
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="glass-panel p-6 max-w-2xl flex gap-6 items-center"
+      {/* HUD */}
+      <div className="relative z-20 flex items-center justify-between px-6 pt-5 pb-4">
+        <button
+          onClick={onBack}
+          className="hud-badge hover:scale-105 transition-transform"
+          style={{ gap: 8, color: "#4ecdc4", borderColor: "rgba(78,205,196,0.3)" }}
         >
-          <div className="w-24 h-24 relative flex-shrink-0 bg-white rounded-full p-2 border-2 border-gray-200">
-            <Image src="/assets/chef_char.png" alt="Chef" fill className="object-contain mix-blend-multiply scale-90" />
+          <ArrowLeft size={18} /> Menu
+        </button>
+
+        <div className="flex items-center gap-3">
+          {/* Stars */}
+          <div className="hud-badge gap-1">
+            {[1,2,3].map(i => (
+              <motion.span key={i} className={`star ${i <= stars ? "active" : ""}`}
+                animate={i <= stars ? { scale: [1,1.4,1] } : {}}
+              >⭐</motion.span>
+            ))}
+          </div>
+          {/* Level badge */}
+          <div className="hud-badge" style={{ color: "#ffd93d" }}>
+            <Trophy size={18} color="#ffd93d" /> LV {levelIdx + 1}/{STEP_BY_STEP_LEVELS.length}
+          </div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col flex-1 items-center gap-6 px-6 pb-6">
+
+        {/* Chef speech bubble */}
+        <motion.div
+          initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+          className="glass flex gap-4 items-center p-5 w-full max-w-2xl"
+        >
+          <div className="w-20 h-20 relative flex-shrink-0 rounded-full overflow-hidden bg-white border-3 border-yellow-300 shadow-lg"
+            style={{ border: "3px solid #ffd93d" }}>
+            <Image src="/assets/chef_char.png" alt="Chef" fill className="object-cover object-top" style={{ mixBlendMode: "multiply" }} />
           </div>
           <div>
-            <h2 className="text-xl font-bold mb-2 text-[var(--accent)]">Chef Nana says:</h2>
-            <p className="text-lg leading-relaxed">{level.instructions}</p>
+            <p className="font-black text-lg" style={{ color: "#ffd93d" }}>Chef Nana says:</p>
+            <p className="text-white font-semibold text-base mt-1">{currentLevel.instructions}</p>
+            <p className="text-gray-400 text-sm mt-1 italic">💡 {currentLevel.chefTip}</p>
           </div>
         </motion.div>
 
-        {/* Status Area */}
-        <div className="h-[200px] flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            {status === "completed" ? (
-              <motion.div
-                key="completed"
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1, rotate: [0, 5, -5, 0] }}
-                transition={{ type: "spring", bounce: 0.6 }}
-                className="flex flex-col items-center gap-4"
-              >
-                <div className="w-48 h-48 relative drop-shadow-[0_0_30px_#22c55e] bg-white rounded-full border-4 border-green-400 p-4">
-                  <Image src={targetDish.image} alt={targetDish.name} fill className="object-contain mix-blend-multiply scale-90" />
-                </div>
-                <h2 className="text-4xl font-bold text-green-400 drop-shadow-lg">PERFECT {targetDish.name.toUpperCase()}!</h2>
-                <GameButton onClick={onBack} variant="primary" className="mt-4">
-                  CONTINUE
-                </GameButton>
-              </motion.div>
-            ) : status === "success" ? (
-              <motion.div
-                key="success"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1.5 }}
-                exit={{ scale: 0, opacity: 0 }}
-                className="text-green-500 bg-white/10 p-8 rounded-full backdrop-blur-md"
-              >
-                <CheckCircle2 size={80} />
-              </motion.div>
-            ) : status === "error" ? (
-              <motion.div
-                key="error"
-                initial={{ x: -20 }}
-                animate={{ x: [0, -20, 20, -20, 20, 0] }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="text-red-500 bg-red-500/10 p-8 rounded-full backdrop-blur-md"
-              >
-                <XCircle size={80} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col items-center gap-4"
-              >
-                <p className="text-2xl font-bold uppercase tracking-widest text-[var(--accent)]">
-                  NEXT INGREDIENT: {expectedIngredientObj.name}
-                </p>
-                <div className="w-32 h-32 relative bg-white rounded-2xl border-2 border-dashed border-gray-300 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 p-4">
-                  <Image src={expectedIngredientObj.image} alt={expectedIngredientObj.name} fill className="object-contain mix-blend-multiply scale-90" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Recipe progress tracker */}
+        <div className="flex items-center justify-center gap-3">
+          {recipe.map((ingrId, idx) => {
+            const ingr = INGREDIENTS[ingrId];
+            const done = idx < step || showComplete;
+            const active = idx === step && !showComplete;
+            return (
+              <div key={idx} className="flex items-center gap-3">
+                <motion.div
+                  animate={active ? { scale: [1, 1.1, 1] } : {}}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="flex flex-col items-center gap-1"
+                >
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-white shadow-lg"
+                    style={{
+                      border: `3px solid ${done ? "#6bcb77" : active ? "#ffd93d" : "rgba(255,255,255,0.1)"}`,
+                      opacity: done || active ? 1 : 0.4,
+                    }}>
+                    <Image src={ingr.image} alt={ingr.name} fill className="object-contain p-1" style={{ mixBlendMode: "multiply" }} />
+                    {done && (
+                      <div className="absolute inset-0 bg-green-500/40 flex items-center justify-center">
+                        <span style={{ fontSize: "1.5rem" }}>✅</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs font-bold" style={{ color: done ? "#6bcb77" : active ? "#ffd93d" : "#6b7280" }}>
+                    {ingr.name}
+                  </span>
+                </motion.div>
+                {idx < recipe.length - 1 && (
+                  <span style={{ color: "#374151", fontSize: "1.5rem", fontWeight: "bold" }}>→</span>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Ingredients Shelf */}
-        <div className="mt-auto mb-12">
-          <div className="glass-panel py-6 px-12 flex gap-8 items-end justify-center">
-            {Object.values(INGREDIENTS).map((ingr: any) => (
-              <motion.button
-                key={ingr.id}
-                whileHover={{ y: -15, scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => handleIngredientClick(ingr.id)}
-                disabled={status !== "idle"}
-                className={`flex flex-col items-center gap-3 p-4 rounded-xl transition-colors ${status !== "idle" ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"}`}
-              >
-                <div className="w-24 h-24 relative bg-white rounded-2xl shadow-xl p-2 border border-gray-200">
-                  <Image src={ingr.image} alt={ingr.name} fill className="object-contain mix-blend-multiply scale-90" />
-                </div>
-                <span className="font-bold text-lg">{ingr.name}</span>
-              </motion.button>
-            ))}
+        {/* Feedback message */}
+        <AnimatePresence>
+          {msg && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="px-6 py-3 rounded-2xl font-bold text-lg"
+              style={{
+                background: status === "correct" ? "rgba(107,203,119,0.2)" : "rgba(255,107,107,0.2)",
+                border: `2px solid ${status === "correct" ? "#6bcb77" : "#ff6b6b"}`,
+                color: status === "correct" ? "#6bcb77" : "#ff6b6b",
+              }}
+            >
+              {msg}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Completion overlay */}
+        <AnimatePresence>
+          {showComplete && (
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0.5 }}
+              className="glass flex flex-col items-center gap-5 p-8 w-full max-w-lg"
+              style={{ border: "2px solid #ffd93d", boxShadow: "0 0 40px rgba(255,217,61,0.3)" }}
+            >
+              <div className="celebrate-text title-font" style={{ fontSize: "2.5rem" }}>
+                LEVEL COMPLETE! 🎉
+              </div>
+              <div className="relative w-40 h-40 bg-white rounded-full border-4 border-yellow-400 shadow-2xl p-3">
+                <Image src={dish.image} alt={dish.name} fill className="object-contain" style={{ mixBlendMode: "multiply" }} />
+              </div>
+              <p className="text-xl font-bold text-white">{dish.emoji} {dish.name}</p>
+              <p className="text-gray-300 italic">{dish.description}</p>
+              <div className="flex gap-1">
+                {[1,2,3].map(i => (
+                  <motion.span key={i} className={`star ${i <= stars ? "active" : ""}`}
+                    initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: i * 0.1 }}>⭐</motion.span>
+                ))}
+              </div>
+              <div className="flex gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                  onClick={reset}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold"
+                  style={{ background: "rgba(255,255,255,0.1)", color: "#9ca3af", border: "1px solid rgba(255,255,255,0.2)" }}
+                >
+                  <RotateCcw size={18} /> Redo
+                </motion.button>
+                {levelIdx + 1 < STEP_BY_STEP_LEVELS.length ? (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                    onClick={nextLevel}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold"
+                    style={{ background: "linear-gradient(135deg, #ffd93d, #ff9a3c)", color: "#000" }}
+                  >
+                    Next Level <ChevronRight size={18} />
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                    onClick={onBack}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold"
+                    style={{ background: "linear-gradient(135deg, #ffd93d, #ff9a3c)", color: "#000" }}
+                  >
+                    <Trophy size={18} /> All Done!
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Ingredient picker - bottom */}
+        {!showComplete && (
+          <div className="mt-auto w-full max-w-3xl">
+            <p className="text-center font-black tracking-widest mb-3 text-sm" style={{ color: "#6b7280" }}>
+              TAP THE RIGHT INGREDIENT
+            </p>
+            <div className="glass py-5 px-6 flex justify-center gap-6">
+              {allIngredients.map((ingr) => (
+                <motion.button
+                  key={ingr.id}
+                  whileHover={{ y: -10, scale: 1.08 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleClick(ingr.id)}
+                  disabled={status !== "idle"}
+                  className="ingr-card flex flex-col items-center gap-2"
+                  style={{ minWidth: 90, opacity: status !== "idle" ? 0.5 : 1 }}
+                >
+                  <div className="relative w-20 h-20">
+                    <Image src={ingr.image} alt={ingr.name} fill className="object-contain" style={{ mixBlendMode: "multiply" }} />
+                  </div>
+                  <span className="font-black text-xs text-center" style={{ color: "#1f2937", maxWidth: 80 }}>{ingr.name}</span>
+                </motion.button>
+              ))}
+            </div>
           </div>
-        </div>
-
+        )}
       </div>
     </div>
   );
