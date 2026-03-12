@@ -67,6 +67,9 @@ export default function RestaurantMode({ onBack }: Props) {
 
   const cfg = LEVELS[Math.min(levelIdx, LEVELS.length - 1)];
   const cookTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Always-current ref so the cook effect can read kitchen without being a dep
+  const kitchenRef = useRef<string[]>([]);
+  kitchenRef.current = kitchen;
 
   // ── Init tables on level ──────────────────────────────────────────────
   useEffect(() => {
@@ -145,18 +148,25 @@ export default function RestaurantMode({ onBack }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cfg.arrivalInterval, gameOver, won, levelIdx]);
 
-  // ── Chef cooking: pick from kitchen queue ─────────────────────────────
+  // ── Chef cooking ─────────────────────────────────────────────────────
+  // IMPORTANT: `kitchen` is intentionally NOT a dep here.
+  // If we included it, every new order would trigger cleanup → clearTimeout
+  // → the cook timer gets cancelled and we'd never finish cooking.
+  // Instead we read the latest value via kitchenRef.
   useEffect(() => {
-    if (kitchen.length === 0 || isCooking) return;
+    if (isCooking || gameOver || won) return;
+    if (kitchenRef.current.length === 0) return;
     setIsCooking(true);
-    const dish = kitchen[0];
+    const dish = kitchenRef.current[0];
     cookTimerRef.current = setTimeout(() => {
       setReady(r => [...r, dish]);
       setKitchen(q => q.slice(1));
       setIsCooking(false);
     }, cfg.cookTime);
-    return () => { if (cookTimerRef.current) clearTimeout(cookTimerRef.current); };
-  }, [kitchen, isCooking, cfg.cookTime]);
+    // No cleanup here — we must NOT cancel the timer when kitchen changes.
+    // The only valid cancel is component unmount, handled via cookTimerRef.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCooking, cfg.cookTime, gameOver, won]);
 
   // ─────────────── CLICK HANDLERS ───────────────────────────────────────
 
