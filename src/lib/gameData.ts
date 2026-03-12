@@ -52,44 +52,44 @@ export interface CareerLevelConfig {
 
 export const CAREER_LEVELS: CareerLevelConfig[] = [
   {
-    level: 1, label: "Grand Opening", description: "Your first day! Nice and easy.",
+    level: 1, label: "Grand Opening", description: "Your first day! Nice and easy — no rush.",
     baseTables: [{ id:1, size:2 },{ id:2, size:4 }],
-    targetScore: 80,  timeLimit: 100, baseCookTime: 3000, basePatienceDrain: 0.6, arrivalInterval: 9000, reward: 60,
+    targetScore: 55,  timeLimit: 130, baseCookTime: 3000, basePatienceDrain: 0.35, arrivalInterval: 11000, reward: 50,
   },
   {
-    level: 2, label: "Word Gets Out", description: "More guests are coming!",
+    level: 2, label: "Word Gets Out", description: "A few more guests show up. Still chill.",
     baseTables: [{ id:1, size:2 },{ id:2, size:4 },{ id:3, size:4 }],
-    targetScore: 180, timeLimit: 110, baseCookTime: 2800, basePatienceDrain: 0.8, arrivalInterval: 7500, reward: 80,
+    targetScore: 110, timeLimit: 130, baseCookTime: 2800, basePatienceDrain: 0.45, arrivalInterval: 9000,  reward: 70,
   },
   {
-    level: 3, label: "Lunch Rush", description: "Midday madness begins.",
+    level: 3, label: "Lunch Rush", description: "Midday buzz. Getting busier!",
     baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:4 },{ id:4, size:4 }],
-    targetScore: 320, timeLimit: 115, baseCookTime: 2500, basePatienceDrain: 1.0, arrivalInterval: 6500, reward: 100,
+    targetScore: 200, timeLimit: 140, baseCookTime: 2600, basePatienceDrain: 0.55, arrivalInterval: 8000,  reward: 90,
   },
   {
-    level: 4, label: "Friday Night", description: "Weekend warriors flood in.",
+    level: 4, label: "Friday Night", description: "Weekend warriors arrive!",
     baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:4 },{ id:4, size:4 },{ id:5, size:4 }],
-    targetScore: 520, timeLimit: 120, baseCookTime: 2200, basePatienceDrain: 1.2, arrivalInterval: 5500, reward: 130,
+    targetScore: 330, timeLimit: 140, baseCookTime: 2400, basePatienceDrain: 0.65, arrivalInterval: 7000,  reward: 110,
   },
   {
-    level: 5, label: "Food Critic Visit", description: "A famous critic arrives today!",
+    level: 5, label: "Food Critic Visit", description: "Impress the critic! Moderate speed needed.",
     baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:4 },{ id:5, size:4 },{ id:6, size:4 }],
-    targetScore: 780, timeLimit: 120, baseCookTime: 2000, basePatienceDrain: 1.4, arrivalInterval: 5000, reward: 160,
+    targetScore: 500, timeLimit: 150, baseCookTime: 2200, basePatienceDrain: 0.80, arrivalInterval: 6500,  reward: 140,
   },
   {
-    level: 6, label: "Peak Season", description: "Holiday crowds are brutal.",
+    level: 6, label: "Peak Season", description: "Holiday crowds. Stay sharp!",
     baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:4 },{ id:5, size:4 },{ id:6, size:4 },{ id:7, size:4 }],
-    targetScore: 1100, timeLimit: 125, baseCookTime: 1800, basePatienceDrain: 1.6, arrivalInterval: 4500, reward: 200,
+    targetScore: 720, timeLimit: 150, baseCookTime: 2000, basePatienceDrain: 0.95, arrivalInterval: 6000,  reward: 175,
   },
   {
-    level: 7, label: "Championship Round", description: "Competing for best restaurant!",
+    level: 7, label: "Championship Round", description: "Competing for best restaurant in town!",
     baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:2 },{ id:5, size:4 },{ id:6, size:4 },{ id:7, size:4 },{ id:8, size:4 }],
-    targetScore: 1500, timeLimit: 125, baseCookTime: 1600, basePatienceDrain: 1.8, arrivalInterval: 4000, reward: 250,
+    targetScore: 1000, timeLimit: 155, baseCookTime: 1800, basePatienceDrain: 1.1, arrivalInterval: 5500,  reward: 220,
   },
   {
-    level: 8, label: "Michelin Star", description: "The ultimate test. Legendary difficulty.",
+    level: 8, label: "Michelin Star", description: "The ultimate test. Legends only.",
     baseTables: [{ id:1, size:2 },{ id:2, size:2 },{ id:3, size:2 },{ id:4, size:2 },{ id:5, size:4 },{ id:6, size:4 },{ id:7, size:4 },{ id:8, size:4 },{ id:9, size:4 }],
-    targetScore: 2200, timeLimit: 130, baseCookTime: 1400, basePatienceDrain: 2.2, arrivalInterval: 3500, reward: 350,
+    targetScore: 1400, timeLimit: 160, baseCookTime: 1600, basePatienceDrain: 1.3, arrivalInterval: 5000,  reward: 300,
   },
 ];
 
