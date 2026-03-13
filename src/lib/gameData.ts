@@ -85,8 +85,8 @@ function generateCareerLevel(n: number): CareerLevelConfig {
   // Target score: $55 → ~$20 000 (exponential feel)
   const targetScore = Math.round(55 * Math.pow(380, t));
 
-  // Timer: 130s → 200s
-  const timeLimit = Math.round(130 + t * 70);
+  // Timer: 180s (3 min) → 240s (4 min)
+  const timeLimit = Math.round(180 + t * 60);
 
   // Cook time: 3000ms → 1000ms
   const baseCookTime = Math.round(3000 - t * 2000);
